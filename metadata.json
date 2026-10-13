@@ -1,0 +1,6 @@
+{
+  "name": "Wedgwood Motor Group",
+  "description": "Clean, modern automotive dealership frontend for Wedgwood Motor Group, Bicester. Quality pre-owned car sales, servicing, part exchange, and courtesy vehicles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
