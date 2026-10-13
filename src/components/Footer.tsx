@@ -118,17 +118,20 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
             </ul>
           </div>
 
-          {/* Column 3: Hours of Operation (Unverified Placeholder) */}
+          {/* Column 3: Hours of Operation */}
           <div>
             <h4 className="text-xs font-bold text-slate-900 tracking-widest uppercase mb-4 border-l-2 border-red-600 pl-2">
               OPENING HOURS
             </h4>
             <div className="space-y-2 text-xs">
-              <p className="text-slate-600 font-medium">
-                {DEALERSHIP_INFO.hoursPlaceholder}
+              <p className="text-slate-900 font-bold text-sm">
+                8:00am – 6:00pm
               </p>
-              <p className="text-[11px] text-slate-500 pt-2 leading-relaxed">
-                Operating schedule is marked as a placeholder pending client confirmation.
+              <p className="text-slate-600 font-medium">
+                Monday to Saturday
+              </p>
+              <p className="text-[11px] text-slate-500 pt-1 leading-relaxed">
+                Sunday &amp; late appointments available by prior arrangement.
               </p>
             </div>
           </div>

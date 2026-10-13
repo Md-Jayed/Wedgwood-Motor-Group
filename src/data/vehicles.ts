@@ -55,7 +55,7 @@ export interface Vehicle {
   model: string;
 
   /** Variant / trim level (e.g. '2.0 330e M Sport Pro Saloon 4dr Petrol Plug-in Hybrid') */
-  variant?: string;
+  variant?: string | null;
 
   /** Price in GBP (£) - genuine price, never fabricated */
   price: number;
@@ -64,57 +64,57 @@ export interface Vehicle {
   year: number;
 
   /** Full or partial registration plate / year marker (e.g. '71 Reg', '21 Reg'). Omit if unknown */
-  regPlate?: string;
+  regPlate?: string | null;
 
   /** Recorded mileage in miles. Omit if unknown */
-  mileage?: number;
+  mileage?: number | null;
 
   /** Fuel type: 'Petrol' | 'Diesel' | 'Hybrid' | 'Electric' | string. Omit if unknown */
-  fuelType?: 'Petrol' | 'Diesel' | 'Hybrid' | 'Electric' | string;
+  fuelType?: 'Petrol' | 'Diesel' | 'Hybrid' | 'Electric' | string | null;
 
   /** Transmission: 'Automatic' | 'Manual' | 'Semi-Automatic' | string. Omit if unknown */
-  transmission?: 'Automatic' | 'Manual' | 'Semi-Automatic' | string;
+  transmission?: 'Automatic' | 'Manual' | 'Semi-Automatic' | string | null;
 
   /** Engine size / output (e.g. '2.0L', '1.5L EcoBoost', '2.0 TDI 163PS'). Omit if unknown */
-  engineSize?: string;
+  engineSize?: string | null;
 
   /** Body style (e.g. 'Saloon', 'Hatchback', 'Estate', 'SUV', 'Crossover', 'Coupe') */
-  bodyType?: string;
+  bodyType?: string | null;
 
   /** Exterior colour name (e.g. 'Portimao Blue Metallic', 'Pure White') */
-  color?: string;
-  colour?: string; // UK spelling alias for convenience
+  color?: string | null;
+  colour?: string | null; // UK spelling alias for convenience
 
   /** Vehicle description / condition notes */
   description: string;
 
   /** Feature list / specifications */
-  features?: string[];
-  keyFeatures?: string[]; // Alias for backwards compatibility
+  features?: string[] | null;
+  keyFeatures?: string[] | null; // Alias for backwards compatibility
 
   /** Main vehicle image (relative path in /public or absolute URL) */
   imageUrl: string;
-  mainImage?: string; // Alias for imageUrl
+  mainImage?: string | null; // Alias for imageUrl
 
   /** Additional gallery images */
-  additionalImages?: string[];
-  galleryImages?: string[]; // Alias for additionalImages
+  additionalImages?: string[] | null;
+  galleryImages?: string[] | null; // Alias for additionalImages
 
   /** Original listing source URL (e.g. eBay UK listing or Auto Trader advert) */
-  sourceUrl?: string;
+  sourceUrl?: string | null;
 
   /** Stock availability status: 'available' or 'sold' */
   status: VehicleStatus;
 
   /** Optional extended specifications - omit if unknown */
-  doors?: number;
-  seats?: number;
-  mpg?: string;
-  ulezCompliant?: boolean;
-  owners?: number;
-  serviceHistory?: string;
-  motExpiry?: string;
-  monthlyEstimate?: number;
+  doors?: number | null;
+  seats?: number | null;
+  mpg?: string | null;
+  ulezCompliant?: boolean | null;
+  owners?: number | null;
+  serviceHistory?: string | null;
+  motExpiry?: string | null;
+  monthlyEstimate?: number | null;
 }
 
 /**
@@ -291,9 +291,9 @@ export const VEHICLES: Vehicle[] = [
   "owners": 0,
   "serviceHistory": null,
   "motExpiry": null,
-  "imageUrl": "https://i.ebayimg.com/thumbs/images/g/jxYAAeSwxbpqp-dy/s-l500.jpg",
+  "imageUrl": "https://i.ebayimg.com/images/g/LLkAAeSwy4Nqp-dy/s-l960.webp",
   "additionalImages": [
-    "https://i.ebayimg.com/thumbs/images/g/jxYAAeSwxbpqp-dy/s-l500.jpg",
+    "https://i.ebayimg.com/images/g/AdUAAeSw6EJqp-dy/s-l960.webp",
     "https://i.ebayimg.com/images/g/2m0AAeSwHAJqp-dy/s-l140.webp",
     "https://i.ebayimg.com/images/g/HzMAAeSw4Zdqp-dy/s-l140.webp"
   ],
@@ -345,9 +345,11 @@ export const VEHICLES: Vehicle[] = [
   "owners": null,
   "serviceHistory": "Service History Available",
   "motExpiry": null,
-  "imageUrl": "https://i.ebayimg.com/images/g/RdQAAeSw4vRqzl2X/s-l140.webp",
+  "imageUrl": "https://i.ebayimg.com/images/g/RdQAAeSw4vRqzl2X/s-l1600.webp",
   "additionalImages": [
-    "https://i.ebayimg.com/images/g/RdQAAeSw4vRqzl2X/s-l140.webp"
+    "https://i.ebayimg.com/images/g/bNIAAeSwJBxqzl2Y/s-l960.webp",
+    "https://i.ebayimg.com/images/g/ZigAAeSwIhNqzl2Y/s-l960.webp",
+    "https://i.ebayimg.com/images/g/UTMAAeSwzFdqzl2a/s-l960.webp"
   ],
   "features": [],
   "keyFeatures": [
@@ -383,9 +385,10 @@ export const VEHICLES: Vehicle[] = [
   "owners": null,
   "serviceHistory": "Full BMW Service History (seller-stated)",
   "motExpiry": null,
-  "imageUrl": "https://i.ebayimg.com/images/g/aY4AAeSwUZ1qzlC0/s-l140.webp",
+  "imageUrl": "https://i.ebayimg.com/images/g/aY4AAeSwUZ1qzlC0/s-l1600.webp",
   "additionalImages": [
-    "https://i.ebayimg.com/images/g/aY4AAeSwUZ1qzlC0/s-l140.webp"
+    "https://i.ebayimg.com/images/g/aY4AAeSwUZ1qzlC0/s-l1600.webp",
+    "https://i.ebayimg.com/images/g/YlcAAeSwh6VqzlC0/s-l960.webp"
   ],
   "features": [
     "Harman Kardon Audio",
@@ -435,9 +438,9 @@ export const VEHICLES: Vehicle[] = [
   "owners": 1,
   "serviceHistory": null,
   "motExpiry": null,
-  "imageUrl": "https://i.ebayimg.com/images/g/0bYAAeSwAJ5qxhG0/s-l140.webp",
+  "imageUrl": "https://i.ebayimg.com/images/g/0bYAAeSwAJ5qxhG0/s-l1600.webp",
   "additionalImages": [
-    "https://i.ebayimg.com/images/g/0bYAAeSwAJ5qxhG0/s-l140.webp"
+    "https://i.ebayimg.com/images/g/VRoAAeSwO7hqxhG1/s-l960.webp"
   ],
   "features": [
     "Climate Control",
@@ -539,8 +542,8 @@ export function slugify(text: string): string {
 export function generateVehicleSlug(vehicle: {
   make: string;
   model: string;
-  variant?: string;
-  fuelType?: string;
+  variant?: string | null;
+  fuelType?: string | null;
 }): string {
   const makeSlug = slugify(vehicle.make);
   const modelSlug = slugify(vehicle.model);
@@ -699,6 +702,11 @@ export const DEALERSHIP_INFO = {
   email: 'wedgewood05@outlook.com',
   phonePlaceholder: '07888 090788',
   emailPlaceholder: 'wedgewood05@outlook.com',
-  hoursPlaceholder: '[Opening hours to be confirmed by client]',
-  auditNotice: 'This website is prepared for insurance audit and business verification. All vehicle listings shown are pre-owned dealership stock prepared to workshop inspection criteria.'
+  hours: '8:00am – 6:00pm',
+  openingHours: '8:00am – 6:00pm',
+  hoursDisplay: '8:00am – 6:00pm (Mon – Sat)',
+  hoursPlaceholder: '8:00am – 6:00pm',
+  scheduleNotice: 'Monday to Saturday: 8:00am – 6:00pm. Sunday and out-of-hours appointments available upon request.',
+  auditNotice: 'All vehicle listings shown are pre-owned dealership stock prepared to workshop inspection criteria.'
 };
+

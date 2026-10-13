@@ -111,12 +111,15 @@ export const ContactPage: React.FC<ContactPageProps> = ({ selectedVehicle }) => 
               <Clock className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-bold text-slate-950 uppercase tracking-wider">Operating Hours</h3>
-            <div className="space-y-1.5 text-xs text-slate-700">
-              <p className="font-medium text-slate-900">
-                {DEALERSHIP_INFO.hoursPlaceholder}
+            <div className="space-y-1 text-xs text-slate-700">
+              <p className="font-bold text-slate-900 text-sm">
+                8:00am – 6:00pm
+              </p>
+              <p className="text-slate-600 font-medium">
+                Monday to Saturday
               </p>
               <p className="text-[11px] text-slate-500 pt-1 leading-relaxed">
-                Operating schedule is marked as a placeholder pending client confirmation.
+                Sunday viewings and out-of-hours collections available by appointment.
               </p>
             </div>
           </div>
@@ -252,7 +255,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ selectedVehicle }) => 
                       onChange={(e) => setAppointmentForm({ ...appointmentForm, preferredTime: e.target.value })}
                       className="w-full bg-white border border-slate-300 rounded px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-red-600"
                     >
-                      <option value="Morning (09:00 – 12:00)">Morning (09:00 – 12:00)</option>
+                      <option value="Early Morning (08:00 – 10:00)">Early Morning (08:00 – 10:00)</option>
+                      <option value="Morning (10:00 – 12:00)">Morning (10:00 – 12:00)</option>
                       <option value="Afternoon (12:00 – 15:00)">Afternoon (12:00 – 15:00)</option>
                       <option value="Late Afternoon (15:00 – 18:00)">Late Afternoon (15:00 – 18:00)</option>
                     </select>

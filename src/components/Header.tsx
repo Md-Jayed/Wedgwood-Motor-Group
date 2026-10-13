@@ -52,8 +52,9 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Direct Contact Links */}
           <div className="flex items-center gap-4 text-xs">
-            <span className="hidden md:inline-flex items-center gap-1 text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-0.5 rounded">
-              Insurance Audit &amp; Verification
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-700 font-medium">
+              <Clock className="w-3.5 h-3.5 text-red-600 shrink-0" />
+              <span>Mon – Sat: 8am – 6pm</span>
             </span>
             <a 
               href={`tel:${DEALERSHIP_INFO.phoneRaw}`}

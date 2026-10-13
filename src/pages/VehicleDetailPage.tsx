@@ -432,6 +432,10 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
                     <span className="truncate">Email Enquiry</span>
                   </a>
                 </div>
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 pt-1">
+                  <Clock className="w-3 h-3 text-red-600 shrink-0" />
+                  <span>Open 8am – 6pm (Mon – Sat) • Viewings by appointment</span>
+                </div>
               </div>
             </div>
           </div>

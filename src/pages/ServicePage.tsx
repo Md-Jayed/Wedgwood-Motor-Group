@@ -413,13 +413,13 @@ export const ServicePage: React.FC<ServicePageProps> = ({ onCourtesyClick }) => 
               <div className="bg-[#F7F7F7] p-4 rounded border border-slate-200 space-y-1.5 text-xs text-slate-700">
                 <div className="font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 mb-1">
                   <Clock className="w-3.5 h-3.5 text-red-600" />
-                  <span>Workshop Operating Hours</span>
+                  <span>Workshop &amp; MOT Operating Hours</span>
                 </div>
-                <div className="text-xs text-slate-700 font-medium">
-                  {DEALERSHIP_INFO.hoursPlaceholder}
+                <div className="text-xs text-slate-900 font-bold text-sm">
+                  8:00am – 6:00pm
                 </div>
-                <p className="text-[11px] text-slate-500 pt-1">
-                  Workshop schedule is marked as a placeholder pending client confirmation.
+                <p className="text-[11px] text-slate-600 pt-1">
+                  Vehicle drop-off, collection &amp; workshop service available from 8:00am till 6:00pm.
                 </p>
               </div>
             </div>

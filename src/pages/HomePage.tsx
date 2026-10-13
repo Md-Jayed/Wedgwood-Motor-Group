@@ -314,11 +314,11 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <Clock className="w-3.5 h-3.5 text-red-600" />
                   <span>Operating Hours</span>
                 </div>
-                <div className="text-xs text-slate-700 font-medium">
-                  {DEALERSHIP_INFO.hoursPlaceholder}
+                <div className="text-xs text-slate-900 font-bold text-sm">
+                  8:00am – 6:00pm
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Hours schedule is marked as a placeholder pending client confirmation.
+                <p className="text-[11px] text-slate-600 mt-1">
+                  Monday to Saturday: 8:00am – 6:00pm • Sunday by appointment
                 </p>
               </div>
             </div>
