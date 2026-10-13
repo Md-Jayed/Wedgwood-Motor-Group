@@ -10,7 +10,7 @@ import {
   RefreshCw,
   Send
 } from 'lucide-react';
-import { EXAMPLE_VEHICLES, Vehicle } from '../data/cars';
+import { VEHICLES, Vehicle } from '../data/vehicles';
 import { VehicleCard } from '../components/VehicleCard';
 
 interface SalesPageProps {
@@ -25,6 +25,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFuel, setSelectedFuel] = useState<string>('All');
   const [selectedTransmission, setSelectedTransmission] = useState<string>('All');
+  const [selectedStatus, setSelectedStatus] = useState<string>('All');
   const [sortBy, setSortBy] = useState<string>('featured');
 
   const [sourcingSent, setSourcingSent] = useState(false);
@@ -37,12 +38,15 @@ export const SalesPage: React.FC<SalesPageProps> = ({
   });
 
   const filteredVehicles = useMemo(() => {
-    return EXAMPLE_VEHICLES.filter((vehicle) => {
+    return VEHICLES.filter((vehicle) => {
+      const term = searchTerm.toLowerCase();
       const matchesSearch = 
-        vehicle.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.variant.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.regPlate.toLowerCase().includes(searchTerm.toLowerCase());
+        !term ||
+        vehicle.make.toLowerCase().includes(term) ||
+        vehicle.model.toLowerCase().includes(term) ||
+        (vehicle.variant && vehicle.variant.toLowerCase().includes(term)) ||
+        (vehicle.regPlate && vehicle.regPlate.toLowerCase().includes(term)) ||
+        (vehicle.description && vehicle.description.toLowerCase().includes(term));
 
       const matchesFuel = 
         selectedFuel === 'All' || vehicle.fuelType === selectedFuel;
@@ -50,15 +54,21 @@ export const SalesPage: React.FC<SalesPageProps> = ({
       const matchesTransmission = 
         selectedTransmission === 'All' || vehicle.transmission === selectedTransmission;
 
-      return matchesSearch && matchesFuel && matchesTransmission;
+      const matchesStatus =
+        selectedStatus === 'All' || vehicle.status === selectedStatus;
+
+      return matchesSearch && matchesFuel && matchesTransmission && matchesStatus;
     }).sort((a, b) => {
       if (sortBy === 'price-low') return a.price - b.price;
       if (sortBy === 'price-high') return b.price - a.price;
-      if (sortBy === 'mileage') return a.mileage - b.mileage;
+      if (sortBy === 'mileage') return (a.mileage || 0) - (b.mileage || 0);
       if (sortBy === 'year-newest') return b.year - a.year;
-      return 0; // Default featured
+      // Default: available first, then newest year
+      if (a.status === 'available' && b.status === 'sold') return -1;
+      if (a.status === 'sold' && b.status === 'available') return 1;
+      return b.year - a.year;
     });
-  }, [searchTerm, selectedFuel, selectedTransmission, sortBy]);
+  }, [searchTerm, selectedFuel, selectedTransmission, selectedStatus, sortBy]);
 
   const handleSourcingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,22 +93,22 @@ export const SalesPage: React.FC<SalesPageProps> = ({
             </p>
           </div>
 
-          {/* Audit Disclaimer Pill */}
+          {/* Dealership Quality Assurance Pill */}
           <div className="bg-[#F7F7F7] border border-slate-200 p-3 rounded-lg text-xs text-slate-600 max-w-sm">
-            <span className="font-bold text-red-600 block mb-0.5">Insurance Audit Notice:</span>
-            All cars shown are representative demonstration listings illustrating inventory standards.
+            <span className="font-bold text-slate-950 block mb-0.5">Workshop Inspection Standards:</span>
+            Every vehicle undergoes comprehensive multi-point mechanical inspection and full provenance verification prior to handover.
           </div>
         </div>
 
         {/* Filter and Search Bar */}
         <div className="bg-[#F7F7F7] p-4 sm:p-6 rounded-xl border border-slate-200 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 sm:gap-4">
             {/* Search Input */}
-            <div className="md:col-span-5 relative">
+            <div className="md:col-span-4 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
                 type="text"
-                placeholder="Search by make, model, or variant (e.g. BMW, Golf, Diesel)..."
+                placeholder="Search make, model, variant..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-600"
@@ -106,7 +116,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({
             </div>
 
             {/* Fuel Filter */}
-            <div className="md:col-span-3">
+            <div className="md:col-span-2">
               <select
                 value={selectedFuel}
                 onChange={(e) => setSelectedFuel(e.target.value)}
@@ -116,6 +126,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({
                 <option value="Petrol">Petrol</option>
                 <option value="Diesel">Diesel</option>
                 <option value="Hybrid">Hybrid / Plug-in</option>
+                <option value="Electric">Electric</option>
               </select>
             </div>
 
@@ -129,6 +140,19 @@ export const SalesPage: React.FC<SalesPageProps> = ({
                 <option value="All">All Gearboxes</option>
                 <option value="Automatic">Automatic</option>
                 <option value="Manual">Manual</option>
+              </select>
+            </div>
+
+            {/* Stock Availability Filter */}
+            <div className="md:col-span-2">
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-red-600"
+              >
+                <option value="All">All Stock Status</option>
+                <option value="available">In Stock Only</option>
+                <option value="sold">Recently Sold</option>
               </select>
             </div>
 
@@ -152,14 +176,15 @@ export const SalesPage: React.FC<SalesPageProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 text-xs text-slate-600">
             <div>
               Showing <strong className="text-slate-950">{filteredVehicles.length}</strong> of{' '}
-              <strong className="text-slate-950">{EXAMPLE_VEHICLES.length}</strong> example vehicles
+              <strong className="text-slate-950">{VEHICLES.length}</strong> vehicles in inventory
             </div>
-            {(searchTerm || selectedFuel !== 'All' || selectedTransmission !== 'All') && (
+            {(searchTerm || selectedFuel !== 'All' || selectedTransmission !== 'All' || selectedStatus !== 'All') && (
               <button
                 onClick={() => {
                   setSearchTerm('');
                   setSelectedFuel('All');
                   setSelectedTransmission('All');
+                  setSelectedStatus('All');
                 }}
                 className="text-red-600 hover:text-red-700 flex items-center gap-1 font-semibold"
               >

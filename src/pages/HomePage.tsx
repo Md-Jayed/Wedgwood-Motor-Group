@@ -13,7 +13,7 @@ import {
   KeyRound, 
   Send 
 } from 'lucide-react';
-import { EXAMPLE_VEHICLES, DEALERSHIP_INFO, Vehicle } from '../data/cars';
+import { VEHICLES, DEALERSHIP_INFO, Vehicle } from '../data/vehicles';
 import { VehicleCard } from '../components/VehicleCard';
 
 interface HomePageProps {
@@ -160,10 +160,10 @@ export const HomePage: React.FC<HomePageProps> = ({
               CURRENT INVENTORY SHOWCASE
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-950 uppercase">
-              Featured Example Cars
+              Featured Stock &amp; Inventory
             </h2>
             <p className="text-sm text-slate-600 mt-1 max-w-2xl">
-              Representative vehicle listings prepared to our inspection criteria. Each vehicle is clearly labelled as demonstration stock until live dealer inventory feeds are synchronized.
+              Handpicked selection of quality pre-owned vehicles prepared to our workshop inspection criteria. Contact our team to book a private viewing or test drive.
             </p>
           </div>
 
@@ -172,15 +172,15 @@ export const HomePage: React.FC<HomePageProps> = ({
               onClick={() => setActiveTab('sales')}
               className="bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 px-5 py-2.5 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-sm"
             >
-              <span>Explore All Stock</span>
+              <span>Explore All Stock ({VEHICLES.length})</span>
               <ArrowRight className="w-3.5 h-3.5 text-red-600" />
             </button>
           </div>
         </div>
 
-        {/* 6 Car Grid */}
+        {/* Vehicle Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {EXAMPLE_VEHICLES.map((car) => (
+          {VEHICLES.slice(0, 6).map((car) => (
             <VehicleCard
               key={car.id}
               vehicle={car}
@@ -190,19 +190,19 @@ export const HomePage: React.FC<HomePageProps> = ({
           ))}
         </div>
 
-        {/* Example Stock Disclaimer Banner */}
+        {/* Stock Quality Assurance Banner */}
         <div className="mt-8 p-4 bg-[#F7F7F7] rounded-lg border border-slate-200 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-red-600 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>
-              <strong>Audit Notice:</strong> These 6 listings illustrate the stock classification, pricing structure, and vehicle standards of Wedgwood Motor Group.
+              <strong>Quality Commitment:</strong> All stock vehicles undergo thorough multi-point mechanical inspection, complete provenance verification, and valet preparation prior to handover.
             </span>
           </div>
           <button
             onClick={() => setActiveTab('sales')}
             className="text-red-600 hover:text-red-700 font-semibold underline text-xs shrink-0"
           >
-            Filter By Make &amp; Fuel &rarr;
+            Filter By Fuel &amp; Gearbox &rarr;
           </button>
         </div>
       </section>

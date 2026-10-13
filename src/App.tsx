@@ -8,7 +8,7 @@ import { PartExPage } from './pages/PartExPage';
 import { CourtesyPage } from './pages/CourtesyPage';
 import { ContactPage } from './pages/ContactPage';
 import { VehicleDetailPage } from './pages/VehicleDetailPage';
-import { Vehicle, findVehicleBySlug, getVehicleSlug } from './data/cars';
+import { Vehicle, findVehicleBySlug, getVehicleSlug } from './data/vehicles';
 
 function parseRouteFromLocation(): { tab: string; vehicleSlug?: string } {
   if (typeof window === 'undefined') return { tab: 'home' };

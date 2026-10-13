@@ -14,9 +14,19 @@ import {
   Clock,
   Zap,
   Phone,
-  Mail
+  Mail,
+  ExternalLink,
+  CheckCircle2
 } from 'lucide-react';
-import { Vehicle, EXAMPLE_VEHICLES, DEALERSHIP_INFO, getVehicleSlug } from '../data/cars';
+import { 
+  Vehicle, 
+  DEALERSHIP_INFO, 
+  getVehicleSlug, 
+  getVehicleImages, 
+  getVehicleFeatures, 
+  getVehicleColor, 
+  getSimilarVehicles 
+} from '../data/vehicles';
 
 interface VehicleDetailPageProps {
   vehicle: Vehicle | null;
@@ -54,7 +64,7 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
           </div>
           <h2 className="text-xl font-bold text-slate-950">Vehicle Not Found</h2>
           <p className="text-xs text-slate-600 leading-relaxed">
-            The requested vehicle listing could not be found or may have been removed from our demonstration stock.
+            The requested vehicle listing could not be found or may have been removed from our inventory.
           </p>
           <button
             onClick={onBackToSales}
@@ -68,21 +78,24 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
     );
   }
 
-  const images = vehicle.additionalImages && vehicle.additionalImages.length > 0
-    ? vehicle.additionalImages
-    : [vehicle.imageUrl];
+  const images = getVehicleImages(vehicle);
+  const features = getVehicleFeatures(vehicle);
+  const color = getVehicleColor(vehicle);
+  const isSold = vehicle.status === 'sold';
 
-  // Select 3 other vehicles for the "SIMILAR VEHICLES" section
-  const similarVehicles = EXAMPLE_VEHICLES.filter((v) => v.id !== vehicle.id).slice(0, 3);
+  // Select similar vehicles from stock
+  const similarVehicles = getSimilarVehicles(vehicle, 3);
 
   // Helper for category label (e.g. PANEL VAN, SALOON, HATCHBACK, SUV, ESTATE)
   const getCategoryLabel = (v: Vehicle) => {
-    if (v.bodyType.toLowerCase().includes('van')) return 'PANEL VAN';
-    if (v.bodyType.toLowerCase().includes('hatchback')) return 'HATCHBACK';
-    if (v.bodyType.toLowerCase().includes('saloon')) return 'SALOON';
-    if (v.bodyType.toLowerCase().includes('estate')) return 'ESTATE';
-    if (v.bodyType.toLowerCase().includes('suv') || v.bodyType.toLowerCase().includes('crossover')) return 'SUV';
-    return v.bodyType.toUpperCase();
+    const body = (v.bodyType || '').toLowerCase();
+    if (body.includes('van')) return 'PANEL VAN';
+    if (body.includes('hatchback')) return 'HATCHBACK';
+    if (body.includes('saloon')) return 'SALOON';
+    if (body.includes('estate')) return 'ESTATE';
+    if (body.includes('suv') || body.includes('crossover')) return 'SUV';
+    if (body.includes('coupe')) return 'COUPE';
+    return v.bodyType ? v.bodyType.toUpperCase() : 'PRE-OWNED';
   };
 
   return (
@@ -154,9 +167,9 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
               ))}
             </div>
 
-            {/* Gallery Caption matching reference screenshot */}
+            {/* Gallery Caption */}
             <p className="text-[11px] text-slate-500 italic">
-              Additional gallery images are representative and will be replaced with photos of the actual vehicle.
+              Photographs show actual vehicle inventory. Walkaround video presentations and high-resolution photos available on request.
             </p>
 
             {/* DESCRIPTION Section */}
@@ -169,33 +182,47 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
               </div>
             </div>
 
-            {/* SPECIFICATION Section: 2-Column Checklist */}
-            <div className="pt-4 border-t border-slate-100">
-              <h2 className="text-xl font-black text-slate-950 uppercase tracking-tight mb-4">
-                SPECIFICATION
-              </h2>
+            {/* SPECIFICATION / FEATURES Section */}
+            {features.length > 0 && (
+              <div className="pt-4 border-t border-slate-100">
+                <h2 className="text-xl font-black text-slate-950 uppercase tracking-tight mb-4">
+                  SPECIFICATION &amp; KEY FEATURES
+                </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                {vehicle.keyFeatures.map((feature, i) => (
-                  <div 
-                    key={i} 
-                    className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-800 border-b border-slate-100 pb-2.5"
-                  >
-                    <Check className="w-4 h-4 text-[#6B21A8] shrink-0" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                  {features.map((feature, i) => (
+                    <div 
+                      key={i} 
+                      className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-800 border-b border-slate-100 pb-2.5"
+                    >
+                      <Check className="w-4 h-4 text-[#6B21A8] shrink-0" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* ================= RIGHT COLUMN: Vehicle Information Card ================= */}
           <div className="lg:col-span-5">
             <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-6 sm:p-7 space-y-6">
-              {/* Category Pill / Tag */}
+              {/* Category Pill & Stock Status Tag */}
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#6B21A8] mb-1">
-                  {getCategoryLabel(vehicle)}
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#6B21A8]">
+                    {getCategoryLabel(vehicle)}
+                  </span>
+                  {isSold ? (
+                    <span className="bg-slate-900 text-white font-bold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded shadow-sm">
+                      SOLD
+                    </span>
+                  ) : (
+                    <span className="bg-emerald-600 text-white font-bold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded shadow-sm flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-white" />
+                      IN STOCK
+                    </span>
+                  )}
                 </div>
 
                 {/* Make and Model in large bold heading */}
@@ -204,17 +231,39 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
                 </h1>
 
                 {/* Variant / Subtitle */}
-                <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal leading-snug">
-                  {vehicle.variant}
-                </p>
+                {vehicle.variant && (
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal leading-snug">
+                    {vehicle.variant}
+                  </p>
+                )}
+
+                {/* Optional Original Listing Source URL Badge */}
+                {vehicle.sourceUrl && (
+                  <div className="mt-2.5">
+                    <a
+                      href={vehicle.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 hover:text-red-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-2.5 py-1 rounded transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3 text-slate-500" />
+                      <span>View original source listing</span>
+                    </a>
+                  </div>
+                )}
               </div>
 
-              {/* Price & Finance Row matching screenshot */}
+              {/* Price & Finance Row */}
               <div className="flex items-baseline justify-between pt-1 border-t border-slate-100">
-                <div className="text-3xl sm:text-4xl font-black text-slate-950 font-sans tracking-tight">
-                  £{vehicle.price.toLocaleString()}
+                <div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    {isSold ? 'SELLING PRICE' : 'PRICE'}
+                  </div>
+                  <div className="text-3xl sm:text-4xl font-black text-slate-950 font-sans tracking-tight">
+                    £{vehicle.price.toLocaleString()}
+                  </div>
                 </div>
-                {vehicle.monthlyEstimate && (
+                {vehicle.monthlyEstimate && !isSold && (
                   <div className="text-right">
                     <div className="text-xl font-bold text-[#6B21A8]">
                       £{vehicle.monthlyEstimate}/mo
@@ -226,78 +275,112 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
                 )}
               </div>
 
-              {/* Two-Column Specification Grid matching screenshot */}
+              {/* Sold Notification Banner if applicable */}
+              {isSold && (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900 space-y-1">
+                  <div className="font-bold flex items-center gap-1.5">
+                    <span>This vehicle has been sold</span>
+                  </div>
+                  <p className="text-[11px] text-amber-800">
+                    Looking for a similar vehicle? Contact our sourcing specialists and we can acquire and inspect a matching car for you.
+                  </p>
+                </div>
+              )}
+
+              {/* Two-Column Specification Grid */}
               <div className="grid grid-cols-2 gap-2.5 text-xs">
                 <div className="bg-[#F8F9FA] p-3 rounded-xs border border-slate-100">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">YEAR</div>
-                  <div className="font-bold text-slate-900 mt-0.5">{vehicle.year}</div>
+                  <div className="font-bold text-slate-900 mt-0.5">
+                    {vehicle.regPlate ? `${vehicle.year} (${vehicle.regPlate})` : vehicle.year}
+                  </div>
                 </div>
 
                 <div className="bg-[#F8F9FA] p-3 rounded-xs border border-slate-100">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">MILEAGE</div>
-                  <div className="font-bold text-slate-900 mt-0.5">{vehicle.mileage.toLocaleString()} miles</div>
+                  <div className="font-bold text-slate-900 mt-0.5">
+                    {typeof vehicle.mileage === 'number' ? `${vehicle.mileage.toLocaleString()} miles` : 'On request'}
+                  </div>
                 </div>
 
                 <div className="bg-[#F8F9FA] p-3 rounded-xs border border-slate-100">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">FUEL</div>
-                  <div className="font-bold text-slate-900 mt-0.5">{vehicle.fuelType}</div>
+                  <div className="font-bold text-slate-900 mt-0.5">{vehicle.fuelType || 'On request'}</div>
                 </div>
 
                 <div className="bg-[#F8F9FA] p-3 rounded-xs border border-slate-100">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">TRANSMISSION</div>
-                  <div className="font-bold text-slate-900 mt-0.5">{vehicle.transmission}</div>
+                  <div className="font-bold text-slate-900 mt-0.5">{vehicle.transmission || 'On request'}</div>
                 </div>
 
                 <div className="bg-[#F8F9FA] p-3 rounded-xs border border-slate-100">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ENGINE</div>
-                  <div className="font-bold text-slate-900 mt-0.5 truncate">{vehicle.engineSize}</div>
+                  <div className="font-bold text-slate-900 mt-0.5 truncate">{vehicle.engineSize || 'On request'}</div>
                 </div>
 
                 <div className="bg-[#F8F9FA] p-3 rounded-xs border border-slate-100">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">BODY TYPE</div>
-                  <div className="font-bold text-slate-900 mt-0.5">{vehicle.bodyType}</div>
+                  <div className="font-bold text-slate-900 mt-0.5">{vehicle.bodyType || 'On request'}</div>
                 </div>
 
                 <div className="bg-[#F8F9FA] p-3 rounded-xs border border-slate-100">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">COLOUR</div>
-                  <div className="font-bold text-slate-900 mt-0.5 truncate">{vehicle.color}</div>
+                  <div className="font-bold text-slate-900 mt-0.5 truncate">{color}</div>
                 </div>
 
                 <div className="bg-[#F8F9FA] p-3 rounded-xs border border-slate-100">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">DOORS &amp; SEATS</div>
-                  <div className="font-bold text-slate-900 mt-0.5">{vehicle.doors} Doors / {vehicle.seats} Seats</div>
+                  <div className="font-bold text-slate-900 mt-0.5">
+                    {vehicle.doors && vehicle.seats
+                      ? `${vehicle.doors} Doors / ${vehicle.seats} Seats`
+                      : vehicle.doors
+                      ? `${vehicle.doors} Doors`
+                      : 'Standard'}
+                  </div>
                 </div>
               </div>
 
-              {/* MOT and Service History Rows matching screenshot */}
-              <div className="space-y-1.5 text-xs text-slate-700 pt-1">
-                <div className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-[#6B21A8] shrink-0" />
-                  <span>MOT until {vehicle.motExpiry}</span>
+              {/* MOT and Service History Rows if provided */}
+              {(vehicle.motExpiry || vehicle.serviceHistory) && (
+                <div className="space-y-1.5 text-xs text-slate-700 pt-1">
+                  {vehicle.motExpiry && (
+                    <div className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-[#6B21A8] shrink-0" />
+                      <span>MOT until {vehicle.motExpiry}</span>
+                    </div>
+                  )}
+                  {vehicle.serviceHistory && (
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-3.5 h-3.5 text-[#6B21A8] shrink-0" />
+                      <span>{vehicle.serviceHistory}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <FileText className="w-3.5 h-3.5 text-[#6B21A8] shrink-0" />
-                  <span>{vehicle.serviceHistory}</span>
-                </div>
-              </div>
+              )}
 
-              {/* Action Buttons matching screenshot */}
+              {/* Action Buttons */}
               <div className="space-y-2.5 pt-2">
-                {/* Purple Primary Button */}
+                {/* Primary Button */}
                 <button
                   onClick={() => onEnquire(vehicle)}
-                  className="w-full bg-[#6B21A8] hover:bg-[#581c87] text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded transition-colors text-center shadow-sm"
+                  className={`w-full text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded transition-colors text-center shadow-sm ${
+                    isSold
+                      ? 'bg-slate-900 hover:bg-slate-800'
+                      : 'bg-[#6B21A8] hover:bg-[#581c87]'
+                  }`}
                 >
-                  ENQUIRE ABOUT THIS VEHICLE
+                  {isSold ? 'ENQUIRE ABOUT SIMILAR VEHICLES' : 'ENQUIRE ABOUT THIS VEHICLE'}
                 </button>
 
-                {/* Dark Charcoal / Black Button */}
-                <button
-                  onClick={() => onEnquire(vehicle)}
-                  className="w-full bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded transition-colors text-center shadow-sm"
-                >
-                  BOOK A VIEWING
-                </button>
+                {/* Secondary Button */}
+                {!isSold && (
+                  <button
+                    onClick={() => onEnquire(vehicle)}
+                    className="w-full bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded transition-colors text-center shadow-sm"
+                  >
+                    BOOK A VIEWING
+                  </button>
+                )}
 
                 {/* Smaller Outlined Buttons: CHECK FINANCE & PART EXCHANGE */}
                 <div className="grid grid-cols-2 gap-2.5 pt-1">
@@ -323,7 +406,7 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
                 </div>
               </div>
 
-              {/* Finance Footnote matching screenshot */}
+              {/* Finance Footnote */}
               <p className="text-[10px] text-slate-500 leading-normal pt-1">
                 *Illustrative example: 10% deposit, 48 months. Finance is subject to status, eligibility and lender approval.
               </p>
@@ -408,7 +491,7 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
                       {simCar.variant}
                     </p>
 
-                    {/* Compact Specs Grid matching screenshot */}
+                    {/* Compact Specs Grid */}
                     <div className="grid grid-cols-2 gap-y-1.5 gap-x-2 py-3 border-y border-slate-100 text-xs text-slate-600">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -416,20 +499,22 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Gauge className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span>{simCar.mileage.toLocaleString()} mi</span>
+                        <span>{typeof simCar.mileage === 'number' ? `${simCar.mileage.toLocaleString()} mi` : 'On request'}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Fuel className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span>{simCar.fuelType}</span>
+                        <span>{simCar.fuelType || 'On request'}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Cog className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span>{simCar.transmission}</span>
+                        <span>{simCar.transmission || 'On request'}</span>
                       </div>
-                      <div className="col-span-2 flex items-center gap-1.5 text-slate-500 pt-0.5">
-                        <Zap className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span className="truncate">{simCar.engineSize}</span>
-                      </div>
+                      {simCar.engineSize && (
+                        <div className="col-span-2 flex items-center gap-1.5 text-slate-500 pt-0.5">
+                          <Zap className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="truncate">{simCar.engineSize}</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Price & Finance */}
