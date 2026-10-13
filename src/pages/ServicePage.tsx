@@ -400,8 +400,13 @@ export const ServicePage: React.FC<ServicePageProps> = ({ onCourtesyClick }) => 
                 {DEALERSHIP_INFO.addressLines.map((line, idx) => (
                   <div key={idx}>{line}</div>
                 ))}
-                <div className="pt-2 text-slate-500">
-                  Telephone: <span className="text-slate-700 italic">{DEALERSHIP_INFO.phonePlaceholder}</span>
+                <div className="pt-2 text-slate-500 space-y-1">
+                  <div>
+                    Telephone: <a href={`tel:${DEALERSHIP_INFO.phoneRaw}`} className="text-slate-900 font-bold hover:text-red-600 transition-colors">{DEALERSHIP_INFO.phone}</a>
+                  </div>
+                  <div>
+                    Email: <a href={`mailto:${DEALERSHIP_INFO.email}`} className="text-slate-900 font-bold hover:text-red-600 transition-colors">{DEALERSHIP_INFO.email}</a>
+                  </div>
                 </div>
               </div>
 

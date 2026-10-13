@@ -151,11 +151,21 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-red-600 shrink-0" />
-                <span className="text-slate-600 italic">{DEALERSHIP_INFO.phonePlaceholder}</span>
+                <a 
+                  href={`tel:${DEALERSHIP_INFO.phoneRaw}`} 
+                  className="text-slate-700 hover:text-red-600 font-semibold transition-colors"
+                >
+                  {DEALERSHIP_INFO.phone}
+                </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-red-600 shrink-0" />
-                <span className="text-slate-600 italic">{DEALERSHIP_INFO.emailPlaceholder}</span>
+                <a 
+                  href={`mailto:${DEALERSHIP_INFO.email}`} 
+                  className="text-slate-700 hover:text-red-600 font-semibold transition-colors"
+                >
+                  {DEALERSHIP_INFO.email}
+                </a>
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
 export interface Vehicle {
   id: string;
+  slug: string;
   make: string;
   model: string;
   variant: string;
@@ -26,9 +27,60 @@ export interface Vehicle {
   description: string;
 }
 
+/**
+ * Converts text into a clean, URL-friendly slug:
+ * - lowercase
+ * - spaces replaced with hyphens
+ * - special characters removed
+ * - consecutive hyphens collapsed
+ */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+/**
+ * Generates an SEO-friendly vehicle slug from make, model, and variant/fuel keywords.
+ */
+export function generateVehicleSlug(vehicle: {
+  make: string;
+  model: string;
+  variant?: string;
+  fuelType?: string;
+}): string {
+  const makeSlug = slugify(vehicle.make);
+  const modelSlug = slugify(vehicle.model);
+  let base = `${makeSlug}-${modelSlug}`;
+
+  const variant = (vehicle.variant || '').toLowerCase();
+  const fuel = (vehicle.fuelType || '').toLowerCase();
+
+  if (variant.includes('gti')) {
+    base += '-gti';
+  } else if (variant.includes('diesel') || fuel === 'diesel') {
+    base += '-diesel';
+  } else if (variant.includes('st-line')) {
+    base += '-st-line';
+  }
+
+  return slugify(base);
+}
+
+/**
+ * Gets the canonical URL slug for any vehicle.
+ */
+export function getVehicleSlug(vehicle: Vehicle): string {
+  return vehicle.slug || generateVehicleSlug(vehicle);
+}
+
 export const EXAMPLE_VEHICLES: Vehicle[] = [
   {
     id: 'wmg-001',
+    slug: 'bmw-3-series',
     make: 'BMW',
     model: '3 Series',
     variant: '2.0 330e M Sport Pro Saloon 4dr Petrol Plug-in Hybrid',
@@ -70,6 +122,7 @@ export const EXAMPLE_VEHICLES: Vehicle[] = [
   },
   {
     id: 'wmg-002',
+    slug: 'mercedes-benz-a-class',
     make: 'Mercedes-Benz',
     model: 'A Class',
     variant: '1.3 A200 AMG Line Executive Hatchback 5dr Petrol',
@@ -111,6 +164,7 @@ export const EXAMPLE_VEHICLES: Vehicle[] = [
   },
   {
     id: 'wmg-003',
+    slug: 'audi-a4-avant-diesel',
     make: 'Audi',
     model: 'A4 Avant',
     variant: '2.0 35 TDI Black Edition S Tronic Estate 5dr Diesel',
@@ -152,6 +206,7 @@ export const EXAMPLE_VEHICLES: Vehicle[] = [
   },
   {
     id: 'wmg-004',
+    slug: 'volkswagen-golf-gti',
     make: 'Volkswagen',
     model: 'Golf',
     variant: '2.0 TSI GTI DSG Hatchback 5dr Petrol',
@@ -193,6 +248,7 @@ export const EXAMPLE_VEHICLES: Vehicle[] = [
   },
   {
     id: 'wmg-005',
+    slug: 'land-rover-range-rover-evoque',
     make: 'Land Rover',
     model: 'Range Rover Evoque',
     variant: '2.0 D180 R-Dynamic SE Auto 4WD 5dr Diesel',
@@ -234,6 +290,7 @@ export const EXAMPLE_VEHICLES: Vehicle[] = [
   },
   {
     id: 'wmg-006',
+    slug: 'ford-puma-st-line',
     make: 'Ford',
     model: 'Puma',
     variant: '1.0 EcoBoost Hybrid mHEV ST-Line X 5dr Petrol',
@@ -275,6 +332,46 @@ export const EXAMPLE_VEHICLES: Vehicle[] = [
   }
 ];
 
+/**
+ * Finds a vehicle by exact slug, generated slug, ID, or fuzzy matching.
+ */
+export function findVehicleBySlug(slugOrId: string): Vehicle | undefined {
+  if (!slugOrId) return undefined;
+  const decoded = decodeURIComponent(slugOrId).trim();
+  const target = slugify(decoded);
+  const rawLower = decoded.toLowerCase();
+
+  // 1. Exact match on defined slug
+  const directMatch = EXAMPLE_VEHICLES.find(
+    (v) => v.slug.toLowerCase() === rawLower || slugify(v.slug) === target
+  );
+  if (directMatch) return directMatch;
+
+  // 2. Match on generated vehicle slug
+  const generatedMatch = EXAMPLE_VEHICLES.find(
+    (v) => generateVehicleSlug(v) === target
+  );
+  if (generatedMatch) return generatedMatch;
+
+  // 3. Fallback match by ID
+  const idMatch = EXAMPLE_VEHICLES.find(
+    (v) => v.id.toLowerCase() === rawLower || slugify(v.id) === target
+  );
+  if (idMatch) return idMatch;
+
+  // 4. Fuzzy match (e.g., 'audi-a4-avant' matches 'audi-a4-avant-diesel' or 'ford-puma' matches 'ford-puma-st-line')
+  return EXAMPLE_VEHICLES.find((v) => {
+    const makeModelSlug = slugify(`${v.make} ${v.model}`);
+    return (
+      target === makeModelSlug ||
+      target.startsWith(makeModelSlug) ||
+      makeModelSlug.startsWith(target) ||
+      v.slug.includes(target) ||
+      target.includes(v.slug)
+    );
+  });
+}
+
 export const DEALERSHIP_INFO = {
   name: 'WEDGE WOOD MOTOR GROUP',
   tradingName: 'WEDGE WOOD MOTOR GROUP',
@@ -289,8 +386,11 @@ export const DEALERSHIP_INFO = {
   city: 'Bicester',
   postcode: 'OX26 4UL',
   country: 'United Kingdom',
-  phonePlaceholder: '[Telephone to be confirmed]',
-  emailPlaceholder: '[Email to be confirmed]',
+  phone: '07888 090788',
+  phoneRaw: '07888090788',
+  email: 'wedgewood05@outlook.com',
+  phonePlaceholder: '07888 090788',
+  emailPlaceholder: 'wedgewood05@outlook.com',
   hoursPlaceholder: '[Opening hours to be confirmed by client]',
-  auditNotice: 'This website is prepared for insurance audit and business verification. All vehicle listings shown are example demonstration stock until verified client inventory is supplied. Contact numbers and operating hours are placeholder items pending confirmation.'
+  auditNotice: 'This website is prepared for insurance audit and business verification. All vehicle listings shown are example demonstration stock until verified client inventory is supplied. Operating hours are placeholder items pending confirmation.'
 };

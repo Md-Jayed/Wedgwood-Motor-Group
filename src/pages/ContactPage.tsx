@@ -86,11 +86,21 @@ export const ContactPage: React.FC<ContactPageProps> = ({ selectedVehicle }) => 
             <div className="text-xs text-slate-700 space-y-2">
               <div>
                 <span className="text-slate-500 block text-[11px]">Dealership Line:</span>
-                <strong className="text-slate-950 text-sm italic">{DEALERSHIP_INFO.phonePlaceholder}</strong>
+                <a 
+                  href={`tel:${DEALERSHIP_INFO.phoneRaw}`} 
+                  className="text-slate-950 text-sm font-bold hover:text-red-600 transition-colors block"
+                >
+                  {DEALERSHIP_INFO.phone}
+                </a>
               </div>
               <div>
                 <span className="text-slate-500 block text-[11px]">Enquiries Inbox:</span>
-                <strong className="text-slate-950 italic">{DEALERSHIP_INFO.emailPlaceholder}</strong>
+                <a 
+                  href={`mailto:${DEALERSHIP_INFO.email}`} 
+                  className="text-slate-950 font-bold hover:text-red-600 transition-colors block break-all"
+                >
+                  {DEALERSHIP_INFO.email}
+                </a>
               </div>
             </div>
           </div>

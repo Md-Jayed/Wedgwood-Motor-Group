@@ -3,6 +3,7 @@ import {
   MapPin, 
   Clock, 
   Phone, 
+  Mail,
   Menu, 
   X, 
   ChevronRight,
@@ -49,15 +50,19 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="font-medium text-slate-700">{DEALERSHIP_INFO.address}</span>
           </div>
 
-          {/* Audit Purpose & Contact Placeholder */}
+          {/* Direct Contact Links */}
           <div className="flex items-center gap-4 text-xs">
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-0.5 rounded">
+            <span className="hidden md:inline-flex items-center gap-1 text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-0.5 rounded">
               Insurance Audit &amp; Verification
             </span>
-            <div className="flex items-center gap-1.5 text-slate-600 font-medium">
+            <a 
+              href={`tel:${DEALERSHIP_INFO.phoneRaw}`}
+              className="flex items-center gap-1.5 text-slate-700 hover:text-red-600 font-semibold transition-colors"
+              title="Call Wedge Wood Motor Group"
+            >
               <Phone className="w-3.5 h-3.5 text-red-600 shrink-0" />
-              <span>{DEALERSHIP_INFO.phonePlaceholder}</span>
-            </div>
+              <span>{DEALERSHIP_INFO.phone}</span>
+            </a>
           </div>
         </div>
       </div>
@@ -165,13 +170,29 @@ export const Header: React.FC<HeaderProps> = ({
               {item.label}
             </button>
           ))}
-          <div className="pt-3 border-t border-slate-200">
+          <div className="pt-3 border-t border-slate-200 space-y-2">
             <button
               onClick={() => handleNavClick('contact')}
               className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold text-xs tracking-wider uppercase py-3 rounded text-center transition-colors"
             >
               BOOK APPOINTMENT / CONTACT
             </button>
+            <div className="grid grid-cols-2 gap-2 pt-1 text-center text-xs">
+              <a
+                href={`tel:${DEALERSHIP_INFO.phoneRaw}`}
+                className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold rounded flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <Phone className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                <span>07888 090788</span>
+              </a>
+              <a
+                href={`mailto:${DEALERSHIP_INFO.email}`}
+                className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold rounded flex items-center justify-center gap-1.5 transition-colors truncate"
+              >
+                <Mail className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                <span>Email Us</span>
+              </a>
+            </div>
           </div>
         </div>
       )}

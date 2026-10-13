@@ -7,7 +7,7 @@ import {
   ArrowRight,
   Info
 } from 'lucide-react';
-import { Vehicle } from '../data/cars';
+import { Vehicle, getVehicleSlug } from '../data/cars';
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -63,7 +63,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
               {vehicle.make}
             </div>
             <a
-              href={`/cars/${vehicle.id}`}
+              href={`/cars/${getVehicleSlug(vehicle)}`}
               onClick={(e) => {
                 e.preventDefault();
                 onViewDetails(vehicle);
@@ -120,7 +120,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 
         <div className="grid grid-cols-2 gap-2">
           <a
-            href={`/cars/${vehicle.id}`}
+            href={`/cars/${getVehicleSlug(vehicle)}`}
             onClick={(e) => {
               e.preventDefault();
               onViewDetails(vehicle);

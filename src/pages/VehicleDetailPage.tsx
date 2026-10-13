@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -11,10 +11,12 @@ import {
   ShieldCheck, 
   Info,
   X,
+  Clock,
   Zap,
-  Clock
+  Phone,
+  Mail
 } from 'lucide-react';
-import { Vehicle, EXAMPLE_VEHICLES, DEALERSHIP_INFO } from '../data/cars';
+import { Vehicle, EXAMPLE_VEHICLES, DEALERSHIP_INFO, getVehicleSlug } from '../data/cars';
 
 interface VehicleDetailPageProps {
   vehicle: Vehicle | null;
@@ -33,6 +35,14 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
 }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [showFinanceModal, setShowFinanceModal] = useState(false);
+
+  useEffect(() => {
+    if (vehicle) {
+      document.title = `${vehicle.year} ${vehicle.make} ${vehicle.model} | WEDGE WOOD MOTOR GROUP`;
+    } else {
+      document.title = 'Vehicle Stock | WEDGE WOOD MOTOR GROUP';
+    }
+  }, [vehicle]);
 
   // Fallback if vehicle is not found
   if (!vehicle) {
@@ -317,6 +327,29 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
               <p className="text-[10px] text-slate-500 leading-normal pt-1">
                 *Illustrative example: 10% deposit, 48 months. Finance is subject to status, eligibility and lender approval.
               </p>
+
+              {/* Direct Dealership Contact */}
+              <div className="pt-3 border-t border-slate-100 space-y-2">
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  DIRECT CONTACT
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <a
+                    href={`tel:${DEALERSHIP_INFO.phoneRaw}`}
+                    className="flex items-center gap-2 p-2 bg-[#F8F9FA] hover:bg-slate-100 rounded border border-slate-200 text-slate-900 font-semibold transition-colors"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                    <span className="truncate">{DEALERSHIP_INFO.phone}</span>
+                  </a>
+                  <a
+                    href={`mailto:${DEALERSHIP_INFO.email}?subject=${encodeURIComponent(`Enquiry: ${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.regPlate})`)}`}
+                    className="flex items-center gap-2 p-2 bg-[#F8F9FA] hover:bg-slate-100 rounded border border-slate-200 text-slate-900 font-semibold transition-colors"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                    <span className="truncate">Email Enquiry</span>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -337,11 +370,18 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
               >
                 <div>
                   {/* Vehicle Image with Category Label in top-left */}
-                  <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
+                  <a
+                    href={`/cars/${getVehicleSlug(simCar)}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (onSelectSimilarVehicle) onSelectSimilarVehicle(simCar);
+                    }}
+                    className="relative aspect-[16/10] overflow-hidden bg-slate-100 block group/img"
+                  >
                     <img
                       src={simCar.imageUrl}
                       alt={`${simCar.make} ${simCar.model}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
                       onError={(e) => {
                         e.currentTarget.src = 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80';
                       }}
@@ -349,12 +389,20 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
                     <div className="absolute top-3 left-3 bg-black/85 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded-xs uppercase tracking-wider">
                       {getCategoryLabel(simCar)}
                     </div>
-                  </div>
+                  </a>
 
                   {/* Vehicle Info */}
                   <div className="p-5">
-                    <h3 className="text-base sm:text-lg font-black text-slate-950 uppercase tracking-tight group-hover:text-[#6B21A8] transition-colors line-clamp-1">
-                      {simCar.make} {simCar.model}
+                    <h3 className="text-base sm:text-lg font-black text-slate-950 uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
+                      <a
+                        href={`/cars/${getVehicleSlug(simCar)}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (onSelectSimilarVehicle) onSelectSimilarVehicle(simCar);
+                        }}
+                      >
+                        {simCar.make} {simCar.model}
+                      </a>
                     </h3>
                     <p className="text-xs text-slate-500 line-clamp-1 mt-0.5 mb-3 font-normal">
                       {simCar.variant}
@@ -401,16 +449,18 @@ export const VehicleDetailPage: React.FC<VehicleDetailPageProps> = ({
                 {/* Card Action Buttons */}
                 <div className="px-5 pb-5 pt-1 space-y-2">
                   {/* VIEW VEHICLE Button */}
-                  <button
-                    onClick={() => {
+                  <a
+                    href={`/cars/${getVehicleSlug(simCar)}`}
+                    onClick={(e) => {
+                      e.preventDefault();
                       if (onSelectSimilarVehicle) {
                         onSelectSimilarVehicle(simCar);
                       }
                     }}
-                    className="w-full bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider py-2.5 rounded transition-colors text-center"
+                    className="w-full bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider py-2.5 rounded transition-colors text-center block"
                   >
                     VIEW VEHICLE
-                  </button>
+                  </a>
 
                   {/* Side-by-side buttons: ENQUIRE NOW & BOOK A VIEWING */}
                   <div className="grid grid-cols-2 gap-2">

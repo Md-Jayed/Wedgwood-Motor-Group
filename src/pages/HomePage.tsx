@@ -286,7 +286,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <Phone className="w-4 h-4 text-red-600 shrink-0" />
                   <div>
                     <span className="text-slate-500">Telephone: </span>
-                    <strong className="text-slate-700 italic">{DEALERSHIP_INFO.phonePlaceholder}</strong>
+                    <a 
+                      href={`tel:${DEALERSHIP_INFO.phoneRaw}`} 
+                      className="text-slate-900 font-bold hover:text-red-600 transition-colors"
+                    >
+                      {DEALERSHIP_INFO.phone}
+                    </a>
                   </div>
                 </div>
 
@@ -294,7 +299,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <Mail className="w-4 h-4 text-red-600 shrink-0" />
                   <div>
                     <span className="text-slate-500">Email: </span>
-                    <strong className="text-slate-700 italic">{DEALERSHIP_INFO.emailPlaceholder}</strong>
+                    <a 
+                      href={`mailto:${DEALERSHIP_INFO.email}`} 
+                      className="text-slate-900 font-bold hover:text-red-600 transition-colors"
+                    >
+                      {DEALERSHIP_INFO.email}
+                    </a>
                   </div>
                 </div>
               </div>

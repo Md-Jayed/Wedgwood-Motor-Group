@@ -8,21 +8,21 @@ import { PartExPage } from './pages/PartExPage';
 import { CourtesyPage } from './pages/CourtesyPage';
 import { ContactPage } from './pages/ContactPage';
 import { VehicleDetailPage } from './pages/VehicleDetailPage';
-import { Vehicle, EXAMPLE_VEHICLES } from './data/cars';
+import { Vehicle, findVehicleBySlug, getVehicleSlug } from './data/cars';
 
-function parseRouteFromLocation(): { tab: string; vehicleId?: string } {
+function parseRouteFromLocation(): { tab: string; vehicleSlug?: string } {
   if (typeof window === 'undefined') return { tab: 'home' };
 
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
   const hash = window.location.hash.replace(/^#\/?/, '');
 
-  // Match /cars/:id in pathname or hash
+  // Match /cars/:slug in pathname or hash (e.g. /cars/bmw-3-series)
   const carPathMatch = path.match(/^\/cars\/([^/]+)/i);
   const carHashMatch = hash.match(/^cars\/([^/]+)/i);
-  const matchedId = carPathMatch?.[1] || carHashMatch?.[1];
+  const matchedSlug = carPathMatch?.[1] || carHashMatch?.[1];
 
-  if (matchedId) {
-    return { tab: 'car-detail', vehicleId: matchedId };
+  if (matchedSlug) {
+    return { tab: 'car-detail', vehicleSlug: decodeURIComponent(matchedSlug) };
   }
 
   // Match standard tabs
@@ -30,7 +30,7 @@ function parseRouteFromLocation(): { tab: string; vehicleId?: string } {
   const cleanHash = hash.toLowerCase();
   const target = cleanPath || cleanHash;
 
-  if (target === 'sales') return { tab: 'sales' };
+  if (target === 'sales' || target === 'stock' || target === 'cars') return { tab: 'sales' };
   if (target === 'service') return { tab: 'service' };
   if (target === 'partex' || target === 'part-ex') return { tab: 'partex' };
   if (target === 'courtesy') return { tab: 'courtesy' };
@@ -42,25 +42,25 @@ function parseRouteFromLocation(): { tab: string; vehicleId?: string } {
 export default function App() {
   const initialRoute = parseRouteFromLocation();
   const [activeTab, setActiveTab] = useState<string>(initialRoute.tab);
-  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(initialRoute.vehicleId || null);
+  const [selectedVehicleSlug, setSelectedVehicleSlug] = useState<string | null>(initialRoute.vehicleSlug || null);
   const [bookingVehicle, setBookingVehicle] = useState<Vehicle | null>(null);
 
   // Sync with browser history and address bar
-  const navigateTo = (tab: string, vehicleId?: string) => {
+  const navigateTo = (tab: string, vehicleSlug?: string) => {
     let targetPath = '/';
-    if (tab === 'car-detail' && vehicleId) {
-      targetPath = `/cars/${vehicleId}`;
+    if (tab === 'car-detail' && vehicleSlug) {
+      targetPath = `/cars/${vehicleSlug}`;
     } else if (tab !== 'home') {
       targetPath = `/${tab}`;
     }
 
     if (window.location.pathname !== targetPath) {
-      window.history.pushState({ tab, vehicleId }, '', targetPath);
+      window.history.pushState({ tab, vehicleSlug }, '', targetPath);
     }
 
     setActiveTab(tab);
-    if (vehicleId) {
-      setSelectedVehicleId(vehicleId);
+    if (vehicleSlug) {
+      setSelectedVehicleSlug(vehicleSlug);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -70,8 +70,8 @@ export default function App() {
     const handlePopState = () => {
       const route = parseRouteFromLocation();
       setActiveTab(route.tab);
-      if (route.vehicleId) {
-        setSelectedVehicleId(route.vehicleId);
+      if (route.vehicleSlug) {
+        setSelectedVehicleSlug(route.vehicleSlug);
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -81,7 +81,7 @@ export default function App() {
   }, []);
 
   const handleViewVehicleDetails = (vehicle: Vehicle) => {
-    navigateTo('car-detail', vehicle.id);
+    navigateTo('car-detail', getVehicleSlug(vehicle));
   };
 
   const handleSelectVehicleForBooking = (vehicle: Vehicle) => {
@@ -89,12 +89,25 @@ export default function App() {
     navigateTo('contact');
   };
 
-  // Resolve current vehicle by ID for the dedicated page
-  const currentVehicle = selectedVehicleId
-    ? EXAMPLE_VEHICLES.find(
-        (v) => v.id.toLowerCase() === selectedVehicleId.toLowerCase()
-      ) || null
+  // Resolve current vehicle by SEO slug (or legacy ID fallback)
+  const currentVehicle = selectedVehicleSlug
+    ? findVehicleBySlug(selectedVehicleSlug) || null
     : null;
+
+  // Canonical URL sync if accessed via legacy ID or alternative slug format
+  useEffect(() => {
+    if (activeTab === 'car-detail' && currentVehicle && selectedVehicleSlug) {
+      const canonicalSlug = getVehicleSlug(currentVehicle);
+      if (selectedVehicleSlug !== canonicalSlug && window.location.pathname.startsWith('/cars/')) {
+        window.history.replaceState(
+          { tab: 'car-detail', vehicleSlug: canonicalSlug },
+          '',
+          `/cars/${canonicalSlug}`
+        );
+        setSelectedVehicleSlug(canonicalSlug);
+      }
+    }
+  }, [activeTab, currentVehicle, selectedVehicleSlug]);
 
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-red-600 selection:text-white">
